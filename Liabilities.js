@@ -24,7 +24,15 @@ function onEditLiabilities(e) {
   const clr         = String(sh.getRange(row, 5).getDisplayValue()).trim();
   const description = String(sh.getRange(row, 3).getDisplayValue()).trim();
 
-  const isEligible = (category === "[Lent]" && clr === "C");
+  const categoryStatusMap = {
+    "[Lent]":          "Lent",
+    "[Received Back]": "Received Back",
+    "[Borrowed]":      "Borrowed",
+    "[Repaid]":        "Repaid"
+  };
+
+  const eligibleCategories = Object.keys(categoryStatusMap);
+  const isEligible = eligibleCategories.includes(category) && clr === "C";
 
   if (!description) return;
 
@@ -52,7 +60,7 @@ function onEditLiabilities(e) {
   const targetRow = liabRow || getNextLiabilitiesRow(li);
 
   li.getRange(targetRow, 2).setValue(sh.getRange(row, 2).getValue()); // Date
-  li.getRange(targetRow, 3).setValue("Lent");                         // Status
+  li.getRange(targetRow, 3).setValue(categoryStatusMap[category]);    // Status
   li.getRange(targetRow, 4).setValue(description);                    // Description
   li.getRange(targetRow, 8).setValue(sh.getRange(row, 6).getValue()); // Amount Out (Payment)
   li.getRange(targetRow, 9).setValue(sh.getRange(row, 7).getValue()); // Amount In (Deposit)
