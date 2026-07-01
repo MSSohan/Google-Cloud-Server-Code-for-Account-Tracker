@@ -1,4 +1,4 @@
-function onEdit(e) {
+function onEditSavings(e) {
 
   if (!e || !e.range) return;
 
@@ -24,7 +24,12 @@ function onEdit(e) {
   const clr         = String(sh.getRange(row, 5).getDisplayValue()).trim();
   const description = String(sh.getRange(row, 3).getDisplayValue()).trim();
 
-  const isEligible = (category === "[Savings]" && clr === "C");
+  const categoryStatusMap = {
+    "[Savings]": "Savings",
+    "[Profit]":  "Profit"
+  };
+  const eligibleCategories = Object.keys(categoryStatusMap);
+  const isEligible = eligibleCategories.includes(category) && clr === "C";
 
   if (!description) return;
 
@@ -52,11 +57,11 @@ function onEdit(e) {
   const targetRow = savingsRow || getNextSavingsRow(sg);
 
   sg.getRange(targetRow, 2).setValue(sh.getRange(row, 2).getValue()); // Date
-  sg.getRange(targetRow, 3).setValue("Savings");                      // Status
+  sg.getRange(targetRow, 3).setValue(categoryStatusMap[category]);    // Status
   sg.getRange(targetRow, 4).setValue(description);                    // Description
   sg.getRange(targetRow, 7).setValue(sh.getRange(row, 6).getValue()); // Payment
   sg.getRange(targetRow, 8).setValue(sh.getRange(row, 7).getValue()); // Deposit
-  // col 3 intentionally left alone — user-managed dropdown
+
 
   ss.toast("Savings Updated ✓", "Savings", 3);
 }
